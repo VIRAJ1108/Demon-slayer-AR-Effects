@@ -1,0 +1,33 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+myenv/
+env/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# MediaPipe cache (sometimes appears)
+*.tflite
+
+# OS generated
+desktop.ini
