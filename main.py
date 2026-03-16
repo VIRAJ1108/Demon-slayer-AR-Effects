@@ -13,7 +13,16 @@ def main():
     pose_detector = PoseDetector()
 
     # Load slash effect
-    effect = EffectRenderer("assets/png-transparent-flowing-water-blue-water-splashing-removebg-preview.png")
+    water_effect = EffectRenderer("assets/png-transparent-flowing-water-blue-water-splashing-removebg-preview.png")
+    flame_effect = EffectRenderer("assets/fire_slash-removebg-preview.png")
+
+    current_effect = "water"
+
+    water_trail = 8
+    flame_trail = 3
+
+    water_duration = 8
+    flame_duration = 4
 
     # Motion detection variables
     prev_wrist = None
@@ -23,7 +32,7 @@ def main():
     history_size = 5
     attack_cooldown = 0
     trail_history = []
-    trail_length = 6
+    trail_length = 8
 
     while True:
 
@@ -53,7 +62,6 @@ def main():
             cv2.line(frame, elbow, wrist, (255,0,0), 4)
             cv2.line(frame, wrist, sword_tip, (255,0,0), 4)
 
-            # --- Motion detection ---
             # --- store wrist history ---
             wrist_history.append(wrist)
 
@@ -75,7 +83,10 @@ def main():
                 speed = np.sqrt(dx*dx + dy*dy)
 
                 if speed > swing_threshold:
-                    show_effect_frames = 6
+                    if current_effect == "water":
+                        show_effect_frames = water_duration
+                    else:
+                        show_effect_frames = flame_duration
                     attack_cooldown = 10
 
             prev_wrist = smoothed_wrist
@@ -85,22 +96,49 @@ def main():
 
                 trail_history.append((wrist, sword_tip))
 
-                if len(trail_history) > trail_length:
+                max_trail = water_trail if current_effect == "water" else flame_trail
+
+                if len(trail_history) > max_trail:
                     trail_history.pop(0)
                 show_effect_frames -= 1
 
            # ---- draw trail ----
-        for start, end in trail_history:
-            frame = effect.render(frame, start, end)
+        for i, (start, end) in enumerate(trail_history):
+
+            opacity = (i + 1) / len(trail_history)
+
+            if current_effect == "water":
+                frame = water_effect.render(frame, start, end, opacity)
+
+            elif current_effect == "flame":
+                frame = flame_effect.render(frame, start, end, opacity)
 
 
         if attack_cooldown > 0:
             attack_cooldown -= 1
 
+        cv2.putText(frame,
+                f"Breathing: {current_effect}",
+                (20,40),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (255,255,255),
+                2
+            )
+
 
         cv2.imshow("Demon Slayer AR", frame)
 
-        if cv2.waitKey(1) & 0xFF == 27:
+        
+        key = cv2.waitKey(1) & 0xFF
+
+        if key == ord('1'):
+            current_effect = "water"
+
+        if key == ord('2'):
+            current_effect = "flame"
+
+        if key == 27:
             break
 
     cam.release()

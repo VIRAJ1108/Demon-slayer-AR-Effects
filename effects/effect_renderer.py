@@ -9,7 +9,7 @@ class EffectRenderer:
         self.effect = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
 
 
-    def render(self, frame, start, end):
+    def render(self, frame, start, end, opacity = 1.0):
 
         x1, y1 = start
         x2, y2 = end
@@ -36,12 +36,13 @@ class EffectRenderer:
         x = int(x1 - w/2)
         y = int(y1 - h/2)
 
-        self.alpha_blend(frame, rotated, x, y)
+        self.alpha_blend(frame, rotated, x, y, opacity)
 
         return frame
 
+    
 
-    def alpha_blend(self, frame, overlay, x, y):
+    def alpha_blend(self, frame, overlay, x, y, opacity):
 
         h, w = overlay.shape[:2]
 
@@ -51,7 +52,7 @@ class EffectRenderer:
         if x+w > frame.shape[1] or y+h > frame.shape[0]:
             return
 
-        alpha = overlay[:,:,3] / 255.0
+        alpha = (overlay[:,:,3] / 255.0) * opacity
 
         for c in range(3):
 
