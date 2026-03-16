@@ -1,7 +1,5 @@
 Demon Slayer AR Effects
 
-! Demo (assets/water_gif.gif) (assets/flame_gif.gif)
-
 A real-time Augmented Reality sword effect system inspired by the anime Demon Slayer.
 The project uses computer vision and pose estimation to track arm motion from a webcam and render anime-style sword slashes when the user performs a swing gesture.
 
